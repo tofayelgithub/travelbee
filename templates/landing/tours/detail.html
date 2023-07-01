@@ -1,0 +1,180 @@
+{% extends 'landing/base.html' %} {% block content %}
+<div class="w-full">
+    <div
+        class="w-full bg-gray-800 bg-blend-overlay pt-72 pb-12 flex flex-col items-bottom justify-left bg-no-repeat bg-cover bg-center bg-[url('/media/{{tour.destination.featured_image}}')]"
+    >
+        <div
+            class="max-w-7xl w-full px-4 bg-transparent lg:mx-auto grid grid-cols-1 lg:grid-cols-4"
+        >
+            <div class="w-full col-span-2">
+                <p class="flex gap-2">
+                    <!--prettier-ignore-->
+                    {% with ''|center:5 as range %}
+                    <!--prettier-ignore-->
+                    {% for i in range %}
+                    {% if forloop.counter > tour.destination.rounded_rating %}
+                    <i class="fa-solid fa-star text-gray-200"></i>
+                    {% else %}
+                    <i class="fa-solid fa-star text-amber-500"></i>
+                    {% endif %} {% endfor %} {% endwith %}
+                </p>
+                <h1 class="text-5xl font-tilt text-white text-left mt-4">
+                    {{tour.name}}
+                </h1>
+                <h4 class="mt-4 text-lg text-white">
+                    <span class="font-bold text-xl">৳{{tour.price}}</span> / Per
+                    Person
+                </h4>
+                <button class="font-bold text-white rounded-md mt-6">
+                    <a
+                        class="px-6 py-3 bg-orange-500 hover:bg-secondary text-white rounded-md"
+                        href="{% url 'tour_book' tour.id %}"
+                        >Book Now</a
+                    >
+                </button>
+            </div>
+        </div>
+    </div>
+    <div
+        class="bg-white max-w-7xl w-full px-4 lg:mx-auto py-12 lg:grid lg:grid-cols-3 gap-6"
+    >
+        <div class="lg:col-span-2">
+            <h1 class="text-3xl text-secondary font-tilt">Tour Overview</h1>
+            <div
+                class="bg-gray-100 rounded-md border text-center mt-4 font-bold divide-x-2 divide-solid text-sm text-gray-700 grid grid-cols-3"
+            >
+                <span class="py-4"
+                    ><i class="fa-solid fa-calendar-days mr-3 text-primary"></i
+                    >{{tour.days}} Days</span
+                >
+                <span class="py-4"
+                    ><i class="fa-solid fa-user mr-3 text-primary"></i
+                    >{{tour.min_age}}+</span
+                >
+                <span class="py-4"
+                    ><i class="fa-solid fa-users mr-3 text-primary"></i
+                    >{{tour.available_seats}} Seats Available</span
+                >
+            </div>
+            <div
+                class="mt-2 grid grid-cols-3 divide-x-2 divide-y-2 divide-gray-300 border-2 border-gray-300 rounded-md font-bold"
+            >
+                <div class="p-6 text-md text-gray-700 font-bold">
+                    Tour Type:
+                </div>
+                <div class="col-span-2 p-6">{{tour.tour_type}}</div>
+                <div class="p-6 text-md text-gray-700 font-bold">Status</div>
+                <div class="col-span-2 p-6 capitalize">{{tour.status}}</div>
+                <div class="p-6 text-md text-gray-700 font-bold">
+                    Destination:
+                </div>
+                <div class="col-span-2 p-6">
+                    <a
+                        target="_blank"
+                        href="{% url 'destination_detail' tour.destination.id %}"
+                        >{{tour.destination}}
+                    </a>
+                </div>
+                <div class="p-6 text-md text-gray-700 font-bold">Guide:</div>
+                <div class="col-span-2">
+                    <a
+                        href="#"
+                        target="_blank"
+                        class="h-full p-2 flex items-center"
+                    >
+                        <img
+                            class="h-12 w-12 mr-2 rounded-full bg-white"
+                            src="/media/{{tour.guide.image}}"
+                            alt=""
+                        />
+                        {{tour.guide.name}}
+                    </a>
+                </div>
+                <div class="p-6 text-md text-gray-700 font-bold">
+                    Available Seats:
+                </div>
+                <div class="col-span-2 p-6">{{tour.available_seats}}</div>
+                <div class="p-6 text-md text-gray-700 font-bold">Days:</div>
+                <div class="col-span-2 p-6">{{tour.days}}</div>
+                <div class="p-6 text-md text-gray-700 font-bold">
+                    Tour Starts at:
+                </div>
+                <div class="col-span-2 p-6">
+                    <!--prettier-ignore-->
+                    {{tour.start_time | date:'h:i a'}} , {{tour.start_date | date:'d M Y'}}
+                </div>
+                <div class="p-6 text-md text-gray-700 font-bold">
+                    Pickup From:
+                </div>
+                <div class="col-span-2 p-6">{{tour.start_place}}</div>
+                <div class="p-6 text-md text-gray-700 font-bold">
+                    Tour Ends at:
+                </div>
+                <div class="col-span-2 p-6">
+                    <!--prettier-ignore-->
+                    {{tour.end_time | date:'h:i a'}} , {{tour.end_date | date:'d M Y'}}
+                </div>
+                <div class="p-6 text-md text-gray-700 font-bold">
+                    Description:
+                </div>
+                <div class="col-span-2 p-6 font-normal text-justify">
+                    {{tour.description}}
+                </div>
+            </div>
+        </div>
+        <div class="lg:col-span-1">
+            <h1 class="text-3xl text-secondary font-tilt">Photo Gallery</h1>
+            <div class="grid grid-cols-1 gap-4 mt-4">
+                {% for image in tour.destination.images.all %}
+                <div
+                    class="aspect-1/1 relative rounded-lg overflow-hidden group"
+                >
+                    <img
+                        class="aspect-2/1 object-cover group-hover:scale-110 ease-in-out duration-300 object-center"
+                        src="/media/{{image.image}}"
+                        alt=""
+                    />
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="lg:col-span-3">
+            <div
+                class="max-w-7xl mx-2 lg:mx-auto rounded-xl border border-dashed border-2 border-gray-300 py-12 px-4 text-center"
+            >
+                <h1 class="text-xl font-bold text-gray-700">
+                    {{tour.available_seats}} Seats Available
+                </h1>
+                <button class="mt-6">
+                    <a
+                        href="{% url 'tour_book' tour.id  %}"
+                        class="px-8 py-2 bg-primary text-white hover:bg-secondary rounded-md font-bold"
+                        >Book Your Seat Now</a
+                    >
+                </button>
+            </div>
+        </div>
+        <div class="col-span-3">
+            <h1 class="text-3xl text-secondary font-tilt mt-8">View In Map</h1>
+            <div class="mapouter mt-4 w-full">
+                {% if tour.destination.has_map %}
+                <div class="gmap_canvas w-full">
+                    <iframe
+                        class="w-full aspect-video lg:aspect-wide"
+                        src="{{tour.destination.map_link}}"
+                        style="border: 0"
+                        allowfullscreen=""
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                    ></iframe>
+                </div>
+                {% else %}
+                <div class="text-gray-500 text-justify">
+                    No map available for this destination
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

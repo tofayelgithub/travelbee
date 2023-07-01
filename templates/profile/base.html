@@ -1,0 +1,68 @@
+{% extends 'landing/base.html' %}{% block content %}
+<div class="w-full">
+    <div class="w-full bg-gray-700 text-white">
+        <div class="max-w-7xl w-full mx-auto px-4 pt-32 pb-12">
+            <h1 class="font-tilt text-2xl md:text-3xl lg:text-4xl">
+                {{title}}
+            </h1>
+        </div>
+    </div>
+    <div class="w-full bg-gray-100">
+        <div
+            class="max-w-7xl px-4 w-full mx-auto grid grid-cols-1 lg:grid-cols-5 gap-4 py-8"
+        >
+            <!-- This example requires Tailwind CSS v2.0+ -->
+            <div class="h-auto">
+                <nav
+                    class="space-y-1 bg-white shadow rounded-lg py-2"
+                    aria-label="Sidebar"
+                >
+                    <!-- Current: "bg-gray-100 text-gray-900", Default: "text-gray-600 hover:bg-gray-50 hover:text-gray-900" -->
+                    <a
+                        href="{% url 'profile' %}"
+                        class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 flex items-center px-3 py-2 text-sm font-bold rounded-md"
+                        aria-current="page"
+                    >
+                        <span class="truncate">
+                            <i class="fa-solid fa-user mx-2"></i>Profile
+                        </span>
+                    </a>
+
+                    <a
+                        href="{% url 'bookings' %}"
+                        class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 flex items-center px-3 py-2 text-sm font-bold rounded-md"
+                    >
+                        <span class="truncate"
+                            ><i class="fa-solid fa-calendar-days mx-2"></i>My
+                            Bookings</span
+                        >
+                    </a>
+
+                    <a
+                        href="{% url 'profile_settings' %}"
+                        class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 flex items-center px-3 py-2 text-sm font-bold rounded-md"
+                    >
+                        <span class="truncate"
+                            ><i class="fa-solid fa-gear mx-2"></i>Settings</span
+                        >
+                    </a>
+
+                    <a
+                        href="#"
+                        class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 flex items-center px-3 py-2 text-sm font-bold rounded-md"
+                    >
+                        <button>
+                            <i class="fa-solid fa-right-from-bracket mx-2"></i
+                            >Log Out
+                        </button>
+                    </a>
+                </nav>
+            </div>
+
+            <div class="w-full lg:col-span-4">
+                {% block profile %}{% endblock %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

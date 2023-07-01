@@ -1,0 +1,114 @@
+{% extends 'landing/base.html' %}{% load static %} {% block content %}
+<div class="w-full">
+    <div
+        class="w-full bg-gray-800 bg-blend-overlay py-36 flex flex-col items-center justify-center bg-no-repeat bg-cover bg-[url('{% static 'landing/destination.jpg' %}')]"
+    >
+        <h1 class="text-5xl font-bold text-white">Tours</h1>
+    </div>
+    <div class="max-w-7xl mx-auto -mt-12">
+        <div class="bg-white border backdrop-blur-sm p-4 rounded-lg shadow-lg">
+            <form
+                action="{% url 'tour' %}"
+                method="GET"
+                class="flex grid grid-cols-3 gap-4"
+            >
+                <div class="w-full">
+                    <select
+                        id="destination"
+                        name="destination"
+                        class="font-bold py-4 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    >
+                        <option value="0" {% if request.GET.destination == "" or "0" %}selected{% endif %}>Select Destination</option>
+                        {% for place in destinations %}
+                        <option value="{{ place.id }}" {% if request.GET.destination == place.id|stringformat:'i' %} selected{% endif %}>{{ place.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="w-full">
+                    <select
+                        id="tourtype"
+                        name="tourtype"
+                        class="font-bold py-4 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    >
+                        <option value="0" {% if request.GET.tourtype == "" or "0" %}selected{% endif %}>Select Type of Tour</option>
+                        {% for tourtype in tourtypes %}
+                        <option value="{{ tourtype.id }}" {% if request.GET.tourtype == tourtype.id|stringformat:'i' %} selected{% endif %}>
+                            {{ tourtype.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <button
+                        type="submit"
+                        class="w-full h-full text-white font-bold bg-orange-700 hover:bg-secondary focus:ring-4 focus:ring-blue-300 rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                    >
+                        <i class="fa-solid fa-magnifying-glass mr-2"></i>Search
+                        Tours
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="py-24 bg-white">
+        {% if tours|length == 0 %}
+        <h1 class="text-center font-bold text-2xl">No Tours Found</h1>
+        {% endif %}
+        <div
+            class="mt-8 max-w-7xl mx-4 lg:mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+        >
+        
+            {% for tour in tours %}
+            <div
+                class="overflow-hidden rounded-lg shadow transition hover:shadow-lg group"
+            >
+                <div class="overflow-hidden">
+                    <img
+                        alt="{{tour.destination.name}}"
+                        src="/media/{{tour.destination.featured_image}}"
+                        class="h-56 w-full object-cover object-center transition duration-500 ease-in-out transform group-hover:scale-110"
+                    />
+                </div>
+
+                <div class="bg-white p-4 sm:p-6">
+                    <time class="block text-sm font-bold text-gray-500">
+                        {{tour.start_date}}
+                    </time>
+
+                    <a
+                        target="_blank"
+                        href="{% url 'destination_detail' tour.destination.id %}"
+                    >
+                        <h3 class="mt-0.5 text-xl text-gray-900 font-bold">
+                            {{tour.destination.name}}
+                        </h3>
+                    </a>
+                    <h4 class="mt-1 text-lg">
+                        <span class="text-primary font-bold text-xl"
+                            >৳{{tour.price}}</span
+                        >
+                        / Per Person
+                    </h4>
+                    <div class="bg-gray-100 rounded-md border p-2 text-sm">
+                        <p class="font-bold">
+                            {{tour.days}} Days | {{tour.tour_type}}
+                        </p>
+                    </div>
+                    <p class="mt-2 line-clamp-3 text-sm/relaxed text-gray-500">
+                        {{tour.description}}
+                    </p>
+                    <a href="{% url 'tour_detail' tour.id %}">
+                        <button
+                            class="w-full mt-2 text-sm font-bold bg-primary hover:bg-secondary px-6 py-3 rounded-lg shadow-lg text-white hover:text-white transition-all duration-300"
+                        >
+                            View Details
+                        </button>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

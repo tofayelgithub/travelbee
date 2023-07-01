@@ -1,0 +1,107 @@
+{% extends 'landing/base.html' %} {% load static %} {% block content %}
+<div class="bg-gray-50">
+    <div
+        class="space-y-5 max-w-screen flex flex-col items-center justify-center h-96 bg-center bg-cover bg-no-repeat bg-[url('{% static 'landing/guide-profile-bg.jpg' %}')]"
+    ></div>
+    <div
+        class="max-w-7xl mx-auto -mt-32 px-4 sm:px-6 lg:px-12 py-8 lg:py-16 bg-white rounded-lg shadow-xl overflow-hidden"
+    >
+        <div
+            class="flex gap-4 flex-col md:flex-row md:items-center md:justify-start"
+        >
+            <div class="flex items-center justify-start">
+                <div class="h-32 w-32 overflow-hidden rounded-full">
+                    <img
+                        class="w-full h-full"
+                        src="/media/{{guide.image}}"
+                        alt=""
+                    />
+                </div>
+                <div class="ml-4">
+                    <h1 class="text-4xl font-tilt">{{guide.name}}</h1>
+                    <h2 class="font-bold text-gray-600 mt-2">
+                        @{{guide.user.username}}
+                    </h2>
+                </div>
+            </div>
+            <div class="ml-8 flex flex-col md:items-center justify-center">
+                <p class="flex gap-2">
+                    <!--prettier-ignore-->
+                    {% with ''|center:5 as range %}
+                    <!--prettier-ignore-->
+                    {% for i in range %}
+                    {% if forloop.counter > guide.rating %}
+                    <i class="fa-solid fa-star text-gray-200"></i>
+                    {% else %}
+                    <i class="fa-solid fa-star text-amber-500"></i>
+                    {% endif %} {% endfor %} {% endwith %}
+                </p>
+                <p class="mt-2 text-gray-400">
+                    ({{guide.total_reviews}} Reviews)
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="py-16">
+        <h1 class="font-tilt text-5xl text-center text-black">
+            Tours of {{guide.name}}
+        </h1>
+        <div
+            class="mt-8 max-w-7xl mx-4 lg:mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+        >
+            {% for tour in guide.tours.all %}
+            <div
+                class="overflow-hidden rounded-lg shadow transition hover:shadow-lg group"
+            >
+                <div class="overflow-hidden">
+                    <img
+                        alt="{{tour.destination.name}}"
+                        src="/media/{{tour.destination.featured_image}}"
+                        class="h-56 w-full object-cover object-center transition duration-500 ease-in-out transform group-hover:scale-110"
+                    />
+                </div>
+
+                <div class="bg-white p-4 sm:p-6">
+                    <time class="block text-sm font-bold text-gray-500">
+                        {{tour.start_date}}
+                    </time>
+
+                    <a
+                        target="_blank"
+                        href="{% url 'destination_detail' tour.destination.id %}"
+                    >
+                        <h3 class="mt-0.5 text-xl text-gray-900 font-bold">
+                            {{tour.destination.name}}
+                        </h3>
+                    </a>
+                    <h4 class="mt-1 text-lg">
+                        <span class="text-primary font-bold text-xl"
+                            >৳{{tour.price}}</span
+                        >
+                        / Per Person
+                    </h4>
+                    <div class="bg-gray-100 rounded-md border p-2 text-sm">
+                        <p class="font-bold">
+                            {{tour.days}} Days | {{tour.tour_type}}
+                        </p>
+                    </div>
+                    <p class="mt-2 line-clamp-3 text-sm/relaxed text-gray-500">
+                        {{tour.description}}
+                    </p>
+                    <a href="{% url 'tour_detail' tour.id %}">
+                        <button
+                            class="w-full mt-2 text-sm font-bold bg-primary hover:bg-secondary px-6 py-3 rounded-lg shadow-lg text-white hover:text-white transition-all duration-300"
+                        >
+                            View Details
+                        </button>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="max-w-7xl mx-auto mt-8 bg-white shadow-xl rounded-lg">
+        <h1>Reviews For {{guide.name}}</h1>
+    </div>
+</div>
+{% endblock %}

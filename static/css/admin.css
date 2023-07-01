@@ -1,0 +1,114 @@
+td {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+}
+table {
+    padding-left: 1rem;
+}
+
+th {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+}
+
+td:first-of-type {
+    padding-left: 2rem;
+}
+
+thead {
+    padding-left: 2rem;
+}
+
+th:first-child {
+    padding-left: 2rem;
+}
+
+input,
+textarea {
+    grid-column: span 2 / span 2;
+}
+
+input[type="checkbox"] {
+    grid-column: span 1 / span 1;
+    background-color: #f3f4f6;
+    color: #2563eb;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 0.25rem;
+    border-color: #d1d5db;
+}
+
+input[type="checkbox"]:checked {
+    background-color: #2563eb;
+    color: #2563eb;
+}
+
+input[type="checkbox"]:focus {
+    outline: 2px solid;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.5);
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+input[type="search"],
+input[type="tel"],
+input[type="url"],
+textarea,
+select {
+    display: block;
+    padding: 0.625rem;
+    background-color: #f9fafb;
+    color: #111827;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    width: 100%;
+    border-radius: 0.5rem;
+    border-width: 1px;
+    border-color: #d1d5db;
+}
+
+div.related-widget-wrapper {
+    grid-column: span 2 / span 2;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+div.related-widget-wrapper select option {
+    font-size: 0.875rem; /* 14px */
+    line-height: 1.25rem; /* 20px */
+}
+
+ul.errorlist li {
+    color: #dc2626;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 700;
+}
+
+option {
+    font-size: 1rem;
+    line-height: 1.5rem;
+}
+
+p.datetime {
+    grid-column: span 2 / span 2;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+p.datetime br {
+    display: none;
+}
+
+p.datetime input:first-of-type {
+    margin-right: 0.5rem;
+}

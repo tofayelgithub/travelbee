@@ -1,0 +1,86 @@
+{% extends 'landing/base.html' %} {% block content %}
+<div class="w-full">
+    <div
+        class="w-full bg-gray-800 bg-blend-overlay py-48 flex flex-col items-center justify-center bg-no-repeat bg-cover bg-center bg-[url('/media/{{destination.featured_image}}')]"
+    >
+        <h1 class="text-5xl font-tilt text-white">{{destination.name}}</h1>
+    </div>
+    <div
+        class="bg-white max-w-7xl mx-4 lg:mx-auto py-12 grid grid-cols-1 lg:grid-cols-3 gap-8"
+    >
+        <div class="col-span-2">
+            <h1 class="text-3xl text-secondary font-tilt">
+                About {{destination.name}}
+            </h1>
+            <div
+                class="text-gray-500 mt-4 text-justify flex flex-col justify-left items-left gap-3"
+            >
+                {{destination.description | safe}}
+            </div>
+            <h1 class="text-3xl text-secondary font-tilt mt-8">
+                Upcoming Tours
+            </h1>
+            <div class="mt-4">
+                {% if destination.upcoming_tours_count == 0 %}
+                <div class="text-gray-500 text-justify">
+                    No upcoming tours for this destination
+                </div>
+                {% else %}
+                <div class="grid gap-4">
+                    {% for tour in destination.upcoming_tours %}
+                    <div
+                        class="aspect-3/1 relative rounded-lg overflow-hidden group"
+                    >
+                        <a href="{% url 'tour_detail' tour.id %}">
+                            <img
+                                class="aspect-3/1 object-cover scale-110 group-hover:scale-100 ease-in-out duration-300 object-center"
+                                src="/media/{{tour.featured_image}}"
+                                alt=""
+                            />
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div>
+            <h1 class="text-3xl text-secondary font-tilt">Photo Gallery</h1>
+            <div class="grid grid-cols-1 gap-4 mt-4">
+                {% for image in destination.images.all %}
+                <div
+                    class="aspect-1/1 relative rounded-lg overflow-hidden group"
+                >
+                    <img
+                        class="aspect-2/1 object-cover group-hover:scale-110 ease-in-out duration-300 object-center"
+                        src="/media/{{image.image}}"
+                        alt=""
+                    />
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-span-3">
+            <h1 class="text-3xl text-secondary font-tilt mt-8">View In Map</h1>
+            <div class="mapouter mt-4 w-full">
+                {% if destination.has_map %}
+                <div class="gmap_canvas w-full">
+                    <iframe
+                        class="w-full aspect-wide"
+                        src="{{destination.map_link}}"
+                        style="border: 0"
+                        allowfullscreen=""
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                    ></iframe>
+                </div>
+                {% else %}
+                <div class="text-gray-500 text-justify">
+                    No map available for this destination
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

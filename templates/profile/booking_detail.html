@@ -1,0 +1,200 @@
+{% extends 'profile/base.html' %} {% block profile %}
+
+<div class="bg-white shadow border rounded-xl overflow-hidden">
+    <div class="aspect-wide relative">
+        <img
+            alt="Office"
+            src="/media/{{booking.tour.featured_image}}"
+            class="absolute inset-0 h-full w-full object-cover group-hover:scale-110 transition ease-in-out transform duration-500"
+        />
+        <div
+            class="h-full bg-gradient-to-t from-gray-900/75 to-gray-900/50 relative flex flex-col justify-end pb-8 pl-8"
+        >
+            <span class="font-bold text-white"
+                >{{booking.tour.start_date}}</span
+            >
+            <h1 class="mt-2 text-3xl text-white font-bold">
+                {{booking.tour.name}}
+            </h1>
+        </div>
+    </div>
+    <div class="px-8 py-8 border-b">
+        <div class="grid md:grid-cols-2 gap-2 text-sm">
+            <div class="grid grid-cols-3">
+                <dt class="col-span-1">Name:</dt>
+                <dd class="col-span-2">{{ booking.user.full_name }}</dd>
+            </div>
+
+            <div class="grid grid-cols-3">
+                <dt class="col-span-1">Email:</dt>
+                <dd class="col-span-2">{{booking.user.user.email}}</dd>
+            </div>
+            <div class="grid grid-cols-3">
+                <dt class="col-span-1">Phone Number 1:</dt>
+                <dd class="col-span-2">{{ booking.phone1 }}</dd>
+            </div>
+
+            <div class="grid grid-cols-3">
+                <dt class="col-span-1">Phone Number 2:</dt>
+                <dd class="col-span-2">{{booking.phone2}}</dd>
+            </div>
+
+            <div class="grid grid-cols-3">
+                <dt class="col-span-1">Booking Status:</dt>
+                <dd class="col-span-2 capitalize">{{booking.status}}</dd>
+            </div>
+        </div>
+    </div>
+    <div class="p-8 border-b">
+        <dl
+            class="text-sm font-medium space-y-2 border-t border-white border-opacity-10"
+        >
+            <div class="flex items-center justify-between">
+                <dt>Price Per Person</dt>
+                <dd>
+                    ৳<span id="price_per_person">{{ booking.tour.price }}</span>
+                </dd>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <dt>Number of Person</dt>
+                <dd id="num_of_persons">{{booking.total_person}}</dd>
+            </div>
+
+            <div
+                class="flex items-center justify-between border-t border-gray-800 border-opacity-10 pt-2"
+            >
+                <dt class="text-base">Total</dt>
+                <dd class="text-base total_amount">৳{{booking.total_price}}</dd>
+            </div>
+        </dl>
+    </div>
+    <div class="py-8 px-8 overflow-x-scroll md:overflow-hidden">
+        <h1 class="mb-4 font-bold">Payment Information</h1>
+        <table
+            class="w-full text-sm text-left text-gray-500 dark:text-gray-400"
+        >
+            <thead
+                class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+            >
+                <tr>
+                    <th scope="col" class="px-4 py-3">Payment Method</th>
+                    <th scope="col" class="px-4 py-3">Paid From</th>
+                    <th scope="col" class="px-4 py-3">Transaction ID</th>
+                    <th scope="col" class="px-4 py-3">Amount</th>
+                    <th scope="col" class="px-4 py-3">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in booking.payments.all %}
+                <tr class="border-b dark:border-gray-700">
+                    <th
+                        scope="row"
+                        class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white uppercase"
+                    >
+                        {{payment.payment_method}}
+                    </th>
+                    <td class="px-4 py-3">+880{{payment.payment_number}}</td>
+                    <td class="px-4 py-3 uppercase">
+                        {{payment.transaction_id}}
+                    </td>
+                    <td class="px-4 py-3">{{payment.amount}}</td>
+                    <td class="px-4 py-3 font-bold uppercase">
+                        {{payment.status}}
+                    </td>
+                </tr>
+                {% endfor %}
+                <tr class="border-t dark:border-gray-700">
+                    <td class="px-4 py-3"></td>
+                    <td class="px-4 py-3"></td>
+                    <td class="px-4 py-3 font-bold">Total Paid</td>
+                    <td class="px-4 py-3 font-bold">{{booking.paid_amount}}</td>
+                    <td class="px-4 py-3"></td>
+                </tr>
+                <tr class="border-b dark:border-gray-700">
+                    <td class="px-4 py-3"></td>
+                    <td class="px-4 py-3"></td>
+                    <td class="px-4 py-3 font-bold">Total Due</td>
+                    <td class="px-4 py-3 font-bold">{{booking.due_amount}}</td>
+                    <td class="px-4 py-3"></td>
+                </tr>
+                <tr class="border-t dark:border-gray-700">
+                    <td class="px-4 py-3">Add Another Payment</td>
+                    <td class="px-4 py-3 text-xs text-red-500">{{errors}}</td>
+                    <td class="px-4 py-3 font-bold"></td>
+                    <td class="px-4 py-3 font-bold"></td>
+                    <td class="px-4 py-3"></td>
+                </tr>
+                <tr class="border-b dark:border-gray-700">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <th
+                            scope="row"
+                            class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                        >
+                            <select
+                                name="payment_method"
+                                id="payment_method"
+                                class="flex-1 min-w-0 block w-full px-3 py-2 rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300"
+                            >
+                                <option value="bkash">Bkash</option>
+                                <option value="rocket">Rocket</option>
+                                <option value="nagad">Nagad</option>
+                            </select>
+                        </th>
+                        <td class="px-4 py-3 w-auto">
+                            <div
+                                class="flex rounded-md shadow-sm justify-start w-auto"
+                            >
+                                <span
+                                    class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm"
+                                >
+                                    +88
+                                </span>
+                                <input
+                                    type="text"
+                                    name="payment_number"
+                                    id="payment_number"
+                                    class="flex-1 block w-36 px-3 py-2 rounded-none rounded-r-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300"
+                                    placeholder="01700000000"
+                                    pattern="[0-9]{11}"
+                                    required
+                                />
+                            </div>
+                        </td>
+                        <td class="px-4 py-3">
+                            <input
+                                type="text"
+                                name="transaction_id"
+                                id="transaction_id"
+                                class="min-w-0 block w-36 px-3 py-2 rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300"
+                                placeholder="ABC123"
+                                pattern="[A-Za-z0-9]{6,}]"
+                                required
+                            />
+                        </td>
+                        <td class="px-4 py-3">
+                            <input
+                                type="number"
+                                name="amount"
+                                id="amount"
+                                class="w-24 block px-3 py-2 rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300"
+                                placeholder="1000"
+                                required
+                            />
+                        </td>
+                        <td class="px-4 py-3 font-bold uppercase">
+                            <button
+                                type="submit"
+                                class="text-sm font-bold bg-orange-600 hover:bg-secondary px-6 py-2 rounded-lg shadow-lg text-white hover:text-white transition-all duration-300"
+                            >
+                                Submit
+                            </button>
+                        </td>
+                    </form>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

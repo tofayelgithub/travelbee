@@ -1,0 +1,151 @@
+{% extends 'profile/base.html' %} {% block profile %}
+<h1 class="text-2xl font-bold">Bookings</h1>
+{% if bookings|length == 0 %}
+<p class="text-lg text-gray-500">No bookings</p>
+{% else %}
+<div class="w-full grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+    {% for booking in bookings %}
+    <article
+        class="relative overflow-hidden rounded-lg shadow transition hover:shadow-lg group"
+    >
+        <img
+            alt="Office"
+            src="/media/{{booking.tour.destination.featured_image}}"
+            class="absolute inset-0 h-full w-full object-cover group-hover:scale-110 transition ease-in-out transform duration-500"
+        />
+        <span
+            class="absolute z-10 top-4 left-4 bg-white font-bold text-xs capitalize rounded-full px-2 py-1"
+            >{{booking.status}}</span
+        >
+        <div
+            class="relative bg-gradient-to-t from-gray-900/75 to-gray-900/25 pt-32 sm:pt-48 lg:pt-64"
+        >
+            <div class="p-4 sm:p-6">
+                <time datetime="2022-10-10" class="block text-xs text-white/90">
+                    {{ booking.tour.start_date }}
+                </time>
+
+                <a href="#">
+                    <h3 class="mt-0.5 text-lg text-white font-bold">
+                        {{booking.tour.name}}
+                    </h3>
+                </a>
+
+                <p class="mt-2 line-clamp-3 text-sm/relaxed text-white/95">
+                    {{booking.tour.description}}
+                </p>
+                <a href="{% url 'booking_detail' booking.id %}">
+                    <button
+                        class="w-full mt-2 text-sm font-bold bg-primary hover:bg-secondary px-6 py-3 rounded-lg shadow-lg text-white hover:text-white transition-all duration-300"
+                    >
+                        View Details
+                    </button>
+                </a>
+            </div>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+
+{% endif %}
+
+<h1 class="text-2xl font-bold mt-8 mb-4">Old Bookings</h1>
+{% if old_bookings|length == 0 %}
+<p class="text-lg text-gray-500">No old bookings</p>
+{% else %}
+<div class="mt-5 w-full grid grid-cols-1 md:grid-cols-3 gap-4">
+    {% for booking in old_bookings %}
+    <article
+        class="relative overflow-hidden rounded-lg shadow transition hover:shadow-lg group"
+    >
+        <img
+            alt="Office"
+            src="/media/{{booking.tour.destination.featured_image}}"
+            class="absolute inset-0 h-full w-full object-cover group-hover:scale-110 transition ease-in-out transform duration-500"
+        />
+        <span
+            class="absolute z-10 top-4 left-4 bg-white font-bold text-xs capitalize rounded-full px-2 py-1"
+            >{{booking.status}}</span
+        >
+        <div
+            class="relative bg-gradient-to-t from-gray-900/75 to-gray-900/25 pt-32 sm:pt-48 lg:pt-64"
+        >
+            <div class="p-4 sm:p-6">
+                <time datetime="2022-10-10" class="block text-xs text-white/90">
+                    {{ booking.tour.start_date }}
+                </time>
+
+                <a href="#">
+                    <h3 class="mt-0.5 text-lg text-white font-bold">
+                        {{booking.tour.name}}
+                    </h3>
+                </a>
+
+                <p class="mt-2 line-clamp-3 text-sm/relaxed text-white/95">
+                    {{booking.tour.description}}
+                </p>
+                <a href="{% url 'booking_detail' booking.id %}">
+                    <button
+                        class="w-full mt-2 text-sm font-bold bg-primary hover:bg-secondary px-6 py-3 rounded-lg shadow-lg text-white hover:text-white transition-all duration-300"
+                    >
+                        View Details
+                    </button>
+                </a>
+            </div>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+{% endif %}
+
+<h1 class="text-2xl font-bold mt-8 mb-4">Cancelled Bookings</h1>
+{% if cancelled_bookings|length == 0 %}
+<p class="text-lg text-gray-500">No Cancelled bookings</p>
+{% else %}
+<div class="mt-5 w-full grid grid-cols-1 md:grid-cols-3 gap-4">
+    {% for booking in cancelled_bookings %}
+    <article
+        class="relative overflow-hidden rounded-lg shadow transition hover:shadow-lg group"
+    >
+        <img
+            alt="Office"
+            src="/media/{{booking.tour.destination.featured_image}}"
+            class="absolute inset-0 h-full w-full object-cover group-hover:scale-110 transition ease-in-out transform duration-500"
+        />
+        <span
+            class="absolute z-10 top-4 left-4 bg-white font-bold text-xs capitalize rounded-full px-2 py-1"
+            >{{booking.status}}</span
+        >
+        <div
+            class="relative bg-gradient-to-t from-gray-900/75 to-gray-900/25 pt-32 sm:pt-48 lg:pt-64"
+        >
+            <div class="p-4 sm:p-6">
+                <time datetime="2022-10-10" class="block text-xs text-white/90">
+                    {{ booking.tour.start_date }}
+                </time>
+
+                <a
+                    href="{% url 'tour_detail' booking.tour.id %}"
+                    target="_blank"
+                >
+                    <h3 class="mt-0.5 text-lg text-white font-bold">
+                        {{booking.tour.name}}
+                    </h3>
+                </a>
+
+                <p class="mt-2 line-clamp-3 text-sm/relaxed text-white/95">
+                    {{booking.tour.description}}
+                </p>
+                <a href="{% url 'booking_detail' booking.id %}">
+                    <button
+                        class="w-full mt-2 text-sm font-bold bg-primary hover:bg-secondary px-6 py-3 rounded-lg shadow-lg text-white hover:text-white transition-all duration-300"
+                    >
+                        View Details
+                    </button>
+                </a>
+            </div>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+{% endif %} {% endblock %}

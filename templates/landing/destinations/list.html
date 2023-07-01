@@ -1,0 +1,37 @@
+{% extends 'landing/base.html' %}{% load static %} {% block content %}
+<div class="w-full">
+    <div
+        class="w-full bg-gray-800 bg-blend-overlay py-36 flex flex-col items-center justify-center bg-no-repeat bg-cover bg-[url('{% static 'landing/destination.jpg' %}')]"
+    >
+        <h1 class="text-5xl font-bold text-white">Destinations</h1>
+    </div>
+    <div class="py-24 bg-white">
+        <div
+            class="max-w-7xl mx-4 lg:mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6"
+        >
+            {% for destination in destinations %}
+            <div
+                class="aspect-2/1 relative bg-white rounded-xl border-[15px] border-white shadow-xl group overflow-hidden"
+            >
+                <a href="{% url 'destination_detail' destination.id %}">
+                    <img
+                        class="aspect-2/1 object-cover transition-all group-hover:scale-110 ease-in-out duration-300 object-center"
+                        src="/media/{{destination.featured_image}}"
+                        alt=""
+                    />
+                    <h1></h1>
+                    <div
+                        class="absolute top-0 h-full w-full bg-gradient-to-t from-gray-900 to-50% to-transparent"
+                    >
+                        <span
+                            class="absolute bottom-0 text-white font-bold text-3xl m-4"
+                            >{{destination.name}}</span
+                        >
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
