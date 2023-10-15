@@ -88,7 +88,7 @@
                             >Confirm password</label
                         >
                         <input
-                            type="confirm-password"
+                            type="password"
                             name="confirm-password"
                             id="confirm-password"
                             placeholder="••••••••"
@@ -107,6 +107,11 @@
                     </div>
                     {% endfor %} {% for error in profile_form.errors %}
                     <div class="text-red-500">{{ error }}</div>
+                    {% endfor %}
+                    {% for message in messages %}
+                    <div class="text-red-500 text-xs font-bold">
+                        {{ message }}
+                    </div>
                     {% endfor %}
 
                     <div class="flex items-start col-span-2">

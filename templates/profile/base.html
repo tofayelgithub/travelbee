@@ -60,7 +60,19 @@
             </div>
 
             <div class="w-full lg:col-span-4">
-                {% block profile %}{% endblock %}
+                {% if messages %}
+                <div class="grid gap-2 mb-4">
+                    {% for message in messages %}
+                    <div class="rounded-md  border {{message.tags}} p-4">
+                        <div class="flex">
+                            <div class="ml-3">
+                                <p class="text-sm font-bold">{{message}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %} {% block profile %}{% endblock %}
             </div>
         </div>
     </div>

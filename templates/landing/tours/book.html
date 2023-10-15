@@ -89,13 +89,24 @@
         {% else %}
         <form method="POST">
             {% csrf_token %}
-            <h2 id="payment-and-shipping-heading" class="sr-only">
-                Payment and shipping details
-            </h2>
+     
 
             <form>
                 <div class="max-w-2xl mx-auto px-4 lg:max-w-none lg:px-0">
                     <div>
+                        {% if messages %}
+                        <div class="grid gap-2 mb-4">
+                            {% for message in messages %}
+                            <div class="rounded-md  border {{message.tags}} p-4">
+                                <div class="flex">
+                                    <div class="ml-3">
+                                        <p class="text-sm font-bold">{{message}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
                         <h3
                             id="contact-info-heading"
                             class="text-lg font-medium text-gray-900"
@@ -256,6 +267,7 @@
                                     />
                                 </div>
                             </div>
+
                             <div class="">
                                 <label
                                     for="id_total_person"
@@ -271,6 +283,17 @@
                                         class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                         disabled
                                     />
+                                </div>
+                            </div>
+
+                            <div class="col-span-2">
+                                <label
+                                    for="payment_method"
+                                    class="block text-sm font-medium text-gray-700"
+                                    >Payment Accounts</label
+                                >
+                                <div class="mt-1">
+                                    <p><span class="font-bold">bKash: </span>01800000000</p>
                                 </div>
                             </div>
 

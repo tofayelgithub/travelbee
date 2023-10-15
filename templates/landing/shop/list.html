@@ -1,0 +1,73 @@
+{% extends 'landing/base.html' %}{% block content %}
+
+<div
+    class="w-full bg-gray-800 py-36 flex flex-col items-center justify-center bg-no-repeat bg-cover"
+>
+    <h1 class="text-5xl font-bold text-white">Rent Shop</h1>
+</div>
+
+<!--
+  This example requires Tailwind CSS v2.0+ 
+  
+  This example requires some changes to your config:
+  
+  ```
+  // tailwind.config.js
+  module.exports = {
+    // ...
+    plugins: [
+      // ...
+      require('@tailwindcss/aspect-ratio'),
+    ],
+  }
+  ```
+-->
+<div class="bg-white">
+    <div
+        class="max-w-2xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:max-w-7xl lg:px-8"
+    >
+        <div
+            class="mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8"
+        >
+            {% for product in products %}
+            <div class="group relative">
+                <a
+                    href="{% url 'shop_detail' product.id %}"
+                    class="w-full h-full"
+                >
+                    <div
+                        class="w-full h-80 bg-gray-200 aspect-w-1 aspect-h-1 rounded-md overflow-hidden group-hover:opacity-75 lg:h-80 lg:aspect-square"
+                    >
+                        <img
+                            src="/media/{{product.image}}"
+                            alt="{{product.name}}"
+                            class="w-full h-auto object-center object-cover"
+                        />
+                    </div>
+                    <div class="mt-4 flex justify-between font-bold">
+                        <div>
+                            <h3 class="text-sm text-gray-700">
+                                <span
+                                    aria-hidden="true"
+                                    class="absolute inset-0"
+                                ></span>
+                                {{product.name}}
+                            </h3>
+                        </div>
+                        <p class="text-sm font-medium text-gray-900">
+                            &#2547;{{product.price}}/Per Day
+                        </p>
+                    </div>
+                    <div
+                        class="mt-3 w-full text-center font-bold bg-orange-600 text-white py-2 rounded-lg group-hover:bg-orange-700"
+                    >
+                        Rent Now
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

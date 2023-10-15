@@ -1,8 +1,10 @@
+from collections.abc import Iterable
+from datetime import date
 from django.forms import ValidationError
 from ckeditor.fields import RichTextField
 from django.db import models
 from django.contrib.auth.models import User
-from .emails import booking_confirmation_mail
+from .emails import *
 
 
 class Profile(models.Model):
@@ -18,7 +20,6 @@ class Profile(models.Model):
     def full_name(self):
         return self.user.first_name + ' ' + self.user.last_name
     
-
 
 class Guide(models.Model):
     user = models.OneToOneField(User, related_name='guide', on_delete=models.CASCADE)
@@ -45,6 +46,7 @@ class Guide(models.Model):
         self.user.email = email
         self.email = email
         self.user.save()
+        super(Guide, self).save(*args, **kwargs)
 
     def total_reviews(self):
         return self.reviews.count()
@@ -131,6 +133,9 @@ class Tour(models.Model):
         for booking in self.bookings.all().exclude(status='cancelled'):
             bookings += booking.total_person
         return bookings
+    
+    def is_expired(self):
+        return True if self.start_date < date.today() else False
         
     
     def available_seats(self):
@@ -152,7 +157,7 @@ class Booking(models.Model):
         ('confirmed', 'Confirmed'),
         ('cancelled', 'Cancelled'),
     ]
-    user = models.ForeignKey('Profile', on_delete=models.CASCADE, blank=True, null=True)
+    user = models.ForeignKey('Profile', related_name='bookings', on_delete=models.CASCADE, blank=True, null=True)
     tour = models.ForeignKey('Tour', related_name="bookings", on_delete=models.CASCADE, blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     total_person = models.IntegerField(default=1)
@@ -162,7 +167,7 @@ class Booking(models.Model):
     phone2 = models.CharField(max_length=11)
 
     def __str__(self):
-        return self.user.user.username
+        return f'{self.user.user.username}: {self.tour.name}'
     
     def updateStatus(self, status):
         self.status = status
@@ -170,10 +175,16 @@ class Booking(models.Model):
 
     def save(self, *args, **kwargs):
         self.total_price = self.tour.price * self.total_person
+        print(self.rents.count())
+        if self.id:
+            if self.rents.count()>0:
+                self.total_price+=sum([rent.amount for rent in self.rents.all()])
         if self.phone1 is None:
             self.phone1 = self.user.phone
-        # if self.status=='confirmed':
-            # booking_confirmation_mail(self)
+        if self.status=='confirmed':
+            booking_confirmation_mail(self)
+        elif self.status=='cancelled':
+            booking_cancellation_mail(self)
         super(Booking, self).save(*args, **kwargs)
 
     def paid_amount(self):
@@ -187,7 +198,7 @@ class Booking(models.Model):
 
     def calculate_due(self):
         return self.total_price - self.paid_amount()
-
+    
 
 class BookingPayment(models.Model):
     PAYMENT_METHOD_CHOICES = [
@@ -198,7 +209,7 @@ class BookingPayment(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('confirmed', 'Confirmed'),
-        ('Failed', 'Failed'),
+        ('failed', 'Failed'),
     ]
     booking = models.ForeignKey('Booking', related_name='payments', on_delete=models.CASCADE, blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
@@ -209,6 +220,13 @@ class BookingPayment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return self.booking.user.user.username
+    
+    def save(self, *args, **kwargs):
+        if self.status=='confirmed':
+            payment_confirmation_mail(self)
+        elif self.status=='failed':
+            payment_failed_mail(self)
+        super(BookingPayment, self).save(*args, **kwargs)
 
 
 
@@ -265,3 +283,32 @@ def user_type(user):
     
 
 User.add_to_class('user_type', user_type)
+
+
+class Product(models.Model):
+    name = models.CharField(max_length=200)
+    price = models.IntegerField()
+    image = models.ImageField(upload_to='images/products/')
+    stock = models.IntegerField(default=1)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+    
+    def available_stock(self):
+        return self.stock - sum([rent.quantity for rent in self.rents.all()])
+    
+
+class Rent(models.Model):
+    booking = models.ForeignKey('Booking', related_name='rents', on_delete=models.CASCADE, blank=True, null=True)
+    product = models.ForeignKey('Product', related_name='rents', on_delete=models.CASCADE, blank=True, null=True)
+    quantity = models.IntegerField(default=1)
+    days = models.IntegerField(default=1)
+    amount = models.IntegerField(default=0, null=True, blank=True)
+    def __str__(self):
+        return f'{self.product.name} For {self.booking.tour.name}'
+    
+    def save(self, *args, **kwargs):
+        self.amount = self.product.price * self.quantity * self.days
+        super(Rent, self).save(*args, **kwargs)
+        self.booking.save()

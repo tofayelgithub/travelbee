@@ -84,6 +84,13 @@ DATABASES = {
     }
 }
 
+from django.contrib.messages import constants as messages
+MESSAGE_TAGS = {
+        messages.SUCCESS: 'bg-green-50 text-green-800 border-green-800',
+        messages.WARNING: 'alert-warning',
+        messages.ERROR: 'bg-red-50 text-red-800 border-red-800',
+ }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -136,7 +143,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'travelbee.info.2023@gmail.com'
-EMAIL_HOST_PASSWORD = 'birgrcncsyoczfge'
+EMAIL_HOST_PASSWORD = 'dbinyfpuxgtvgqys'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'TravelBee <travelbee.info.2023@gmail.com>'

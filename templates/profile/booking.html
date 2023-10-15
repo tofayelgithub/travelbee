@@ -4,7 +4,47 @@
 <p class="text-lg text-gray-500">No bookings</p>
 {% else %}
 <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-    {% for booking in bookings %}
+    {% if suggestion %}
+    <article
+        class="relative overflow-hidden rounded-lg shadow transition hover:shadow-lg group"
+    >
+        <img
+            alt="Office"
+            src="/media/{{suggestion.destination.featured_image}}"
+            class="absolute inset-0 h-full w-full object-cover group-hover:scale-110 transition ease-in-out transform duration-500"
+        />
+        <span
+            class="absolute z-10 top-4 left-4 bg-white font-bold text-xs capitalize rounded-full px-2 py-1"
+            >Recommended For You</span
+        >
+        <div
+            class="relative bg-gradient-to-t from-gray-900/75 to-gray-900/25 pt-32 sm:pt-48 lg:pt-64"
+        >
+            <div class="p-4 sm:p-6">
+                <time datetime="2022-10-10" class="block text-xs text-white/90">
+                    {{ suggestion.start_date }}
+                </time>
+
+                <a href="#">
+                    <h3 class="mt-0.5 text-lg text-white font-bold">
+                        {{suggestion.name}}
+                    </h3>
+                </a>
+
+                <p class="mt-2 line-clamp-3 text-sm/relaxed text-white/95">
+                    {{suggestion.description}}
+                </p>
+                <a href="{% url 'tour_detail' suggestion.id %}">
+                    <button
+                        class="w-full mt-2 text-sm font-bold bg-primary hover:bg-secondary px-6 py-3 rounded-lg shadow-lg text-white hover:text-white transition-all duration-300"
+                    >
+                        View Details
+                    </button>
+                </a>
+            </div>
+        </div>
+    </article>
+    {% endif %} {% for booking in bookings %}
     <article
         class="relative overflow-hidden rounded-lg shadow transition hover:shadow-lg group"
     >

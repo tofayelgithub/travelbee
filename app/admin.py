@@ -7,6 +7,11 @@ from django.utils.safestring import mark_safe
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
+
+admin.site.site_header = 'TravelBee Administration'
+admin.site.site_title = 'TravelBee Admin'
+admin.site.index_title = 'Admin Panel'
+
 class ProfileInline(admin.StackedInline):
     model = Profile
     can_delete = False
@@ -97,6 +102,16 @@ class PaymentInline(admin.TabularInline):
         return mark_safe("<a href='{}'>View Details</a>".format(view_url))
     
 
+class RentInline(admin.TabularInline):
+    model = Rent
+    readonly_fields = ('view_details',)
+    can_delete = False
+    verbose_name_plural = 'rents'
+
+    def view_details(self, obj):
+        view_url = reverse("admin:app_rent_change", args=[obj.id])
+        return mark_safe("<a href='{}'>View Details</a>".format(view_url))
+
 class BookingAdmin(admin.ModelAdmin):
     list_display = ('user', 'tour', 'status', 'created_at', 'paid_amount')
     readonly_fields = ('paid_amount', 'due_amount', 'created_at')
@@ -104,7 +119,7 @@ class BookingAdmin(admin.ModelAdmin):
     list_filter = ['status', 'created_at']
     ordering = ['created_at']
     list_per_page = 10
-    inlines = [PaymentInline]
+    inlines = [PaymentInline, RentInline]
 
 admin.site.register(Booking, BookingAdmin)
 
@@ -133,3 +148,33 @@ class GuideReviewAdmin(admin.ModelAdmin):
 admin.site.register(GuideReview, GuideReviewAdmin)
 
 
+class ProductRentInline(admin.TabularInline):
+    model = Rent
+    readonly_fields = ('view_details',)
+    can_delete = False
+    verbose_name_plural = 'rents'
+
+    def view_details(self, obj):
+        view_url = reverse("admin:app_rent_change", args=[obj.id])
+        return mark_safe("<a href='{}'>View Details</a>".format(view_url))
+    
+
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ['name']
+    list_filter = ['name']
+    ordering = ['name']
+    list_per_page = 10
+    inlines = [ProductRentInline]
+
+admin.site.register(Product, ProductAdmin)
+
+
+
+class RentAdmin(admin.ModelAdmin):
+    list_display = ('product', 'booking', 'quantity')
+    search_fields = ['booking__user', 'product__name']
+    list_filter = ['product__name', 'booking__user', 'booking__tour']
+    list_per_page = 10
+
+admin.site.register(Rent, RentAdmin)

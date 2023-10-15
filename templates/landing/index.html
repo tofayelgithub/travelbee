@@ -3,7 +3,7 @@
     <!--Top hero section with search form -->
     <div
         id="hero1"
-        class="bg-gray-700 px-4 text-white flex flex-col gap-4 bg-blend-overlay py-80 lg:px-64 bg-bottom bg-no-repeat bg-cover bg-[url('{% static 'landing/hero1.jpg' %}')]"
+        class="bg-gray-700 px-4 text-white flex flex-col gap-4 bg-blend-overlay pt-80 pb-96 lg:px-64 bg-bottom bg-no-repeat bg-cover bg-[url('{% static 'landing/hero1.jpg' %}')]"
     >
         <h1 class="text-7xl font-tilt">Explore<br />Your Travel</h1>
         <p class="text-md font-bold">
@@ -21,10 +21,16 @@
                         id="destination"
                         name="destination"
                         class="font-bold py-4 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        onchange="get_featured_image(this.options[this.selectedIndex].dataset)"
                     >
                         <option value="0" selected>Select Destination</option>
                         {% for place in destinations %}
-                        <option value="{{ place.id }}">{{ place.name }}</option>
+                        <option
+                            value="{{ place.id }}"
+                            data-image="{{place.featured_image}}"
+                        >
+                            {{ place.name }}
+                        </option>
                         {% endfor %}
                     </select>
                 </div>
@@ -53,8 +59,74 @@
                 </div>
             </form>
         </div>
+        <script>
+            function get_featured_image(data) {
+                document.getElementById("hero1").style.backgroundImage =
+                    "url(/media/" + data["image"] + ")";
+            }
+        </script>
     </div>
+    <!-- Upcoming Tours -->
+    <div
+        class="py-16 bg-cover bg-center bg-gray-700 bg-blend-overlay bg-[url('{% static 'landing/bgtours.jpg' %}')]"
+    >
+        <h1 class="font-tilt text-5xl text-center text-white">
+            Upcoming Tours
+        </h1>
+        <div
+            class="mt-8 max-w-7xl mx-4 lg:mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+        >
+            {% for tour in upcoming_tours %}
+            <div
+                class="h-full overflow-hidden rounded-lg shadow transition hover:shadow-lg group"
+            >
+                <div class="overflow-hidden">
+                    <img
+                        alt="{{tour.destination.name}}"
+                        src="/media/{{tour.destination.featured_image}}"
+                        class="h-56 w-full object-cover object-center transition duration-500 ease-in-out transform group-hover:scale-110"
+                    />
+                </div>
 
+                <div class="bg-white p-4 sm:p-6">
+                    <time class="block text-sm font-bold text-gray-500">
+                        {{tour.start_date}}
+                    </time>
+
+                    <a
+                        target="_blank"
+                        href="{% url 'destination_detail' tour.destination.id %}"
+                    >
+                        <h3 class="mt-0.5 text-xl text-gray-900 font-bold">
+                            {{tour.destination.name}}
+                        </h3>
+                    </a>
+                    <h4 class="mt-1 text-lg">
+                        <span class="text-primary font-bold text-xl"
+                            >৳{{tour.price}}</span
+                        >
+                        / Per Person
+                    </h4>
+                    <div class="bg-gray-100 rounded-md border p-2 text-sm">
+                        <p class="font-bold">
+                            {{tour.days}} Days | {{tour.tour_type}}
+                        </p>
+                    </div>
+                    <p class="mt-2 line-clamp-3 text-sm/relaxed text-gray-500">
+                        {{tour.description}}
+                    </p>
+                    <a href="{% url 'tour_detail' tour.id %}">
+                        <button
+                            class="w-full mt-2 text-sm font-bold bg-primary hover:bg-secondary px-6 py-2 rounded-lg shadow-lg text-white hover:text-white transition-all duration-300"
+                        >
+                            View Details
+                        </button>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
     <!--Second Hero Section for features-->
     <div class="bg-neutral-200 py-32">
         <h1 class="font-tilt text-5xl text-center">
@@ -209,67 +281,7 @@
             </a>
         </div>
     </div>
-    <!-- Upcoming Tours -->
-    <div
-        class="py-16 bg-cover bg-center bg-gray-700 bg-blend-overlay bg-[url('{% static 'landing/bgtours.jpg' %}')]"
-    >
-        <h1 class="font-tilt text-5xl text-center text-white">
-            Upcoming Tours
-        </h1>
-        <div
-            class="mt-8 max-w-7xl mx-4 lg:mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
-        >
-            {% for tour in upcoming_tours %}
-            <div
-                class="h-full overflow-hidden rounded-lg shadow transition hover:shadow-lg group"
-            >
-                <div class="overflow-hidden">
-                    <img
-                        alt="{{tour.destination.name}}"
-                        src="/media/{{tour.destination.featured_image}}"
-                        class="h-56 w-full object-cover object-center transition duration-500 ease-in-out transform group-hover:scale-110"
-                    />
-                </div>
 
-                <div class="bg-white p-4 sm:p-6">
-                    <time class="block text-sm font-bold text-gray-500">
-                        {{tour.start_date}}
-                    </time>
-
-                    <a
-                        target="_blank"
-                        href="{% url 'destination_detail' tour.destination.id %}"
-                    >
-                        <h3 class="mt-0.5 text-xl text-gray-900 font-bold">
-                            {{tour.destination.name}}
-                        </h3>
-                    </a>
-                    <h4 class="mt-1 text-lg">
-                        <span class="text-primary font-bold text-xl"
-                            >৳{{tour.price}}</span
-                        >
-                        / Per Person
-                    </h4>
-                    <div class="bg-gray-100 rounded-md border p-2 text-sm">
-                        <p class="font-bold">
-                            {{tour.days}} Days | {{tour.tour_type}}
-                        </p>
-                    </div>
-                    <p class="mt-2 line-clamp-3 text-sm/relaxed text-gray-500">
-                        {{tour.description}}
-                    </p>
-                    <a href="{% url 'tour_detail' tour.id %}">
-                        <button
-                            class="w-full mt-2 text-sm font-bold bg-primary hover:bg-secondary px-6 py-2 rounded-lg shadow-lg text-white hover:text-white transition-all duration-300"
-                        >
-                            View Details
-                        </button>
-                    </a>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
     <!-- Popular Destinations -->
     <div class="py-16 bg-neutral-200">
         <div
@@ -322,9 +334,9 @@
                 </div>
                 <div class="relative text-justify text-gray-500 font-bold">
                     <p class="z-20 line-clamp-5 leading-loose">
-                        Lorem ipsum dolor amet consectet adipiscing sed do
-                        eiusmod tempor incididunt labore et dolore magna aliqua
-                        ipsum suspen disse ultrices gravida Risus
+                        Travelbee exceeded all expectations with their
+                        impeccable tour management, ensuring a seamless and
+                        unforgettable travel experience.
                     </p>
                     <div
                         class="absolute top-0 left-0 h-full w-full flex flex-col justify-center items-center"

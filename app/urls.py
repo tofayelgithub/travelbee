@@ -12,6 +12,9 @@ urlpatterns = [
     path('destinations/', destinationsListView, name='destination'),
     path('destinations/<int:pk>/', destinationDetailView, name='destination_detail'),
 
+    path('shop/', shop_list, name='shop_list'),
+    path('shop/<int:pk>/', shop_detail, name='shop_detail'),
+
     path('guides/', guidesListView, name='guide'),
     path('guides/<int:pk>/', guideDetailView, name='guide_detail'),
 
@@ -23,4 +26,7 @@ urlpatterns = [
     path('profile/settings/', profileSettingsView, name='profile_settings'),
     path('profile/bookings/', bookingListView, name='bookings'),
     path('profile/bookings/<int:pk>/', bookingDetailView, name='booking_detail'),
+
+
+    path('api/bookings/<int:pk>', booking_details_api, name="booking_detail_api")
 ]

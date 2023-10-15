@@ -1,16 +1,19 @@
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from .forms import *
 from .models import *
 from django.db.models import Q
+from django.contrib import messages
+from datetime import datetime, timedelta, date
 
 
 # Create your views here.
 
 def indexView(request):
     data = {}
-    data['upcoming_tours'] = Tour.objects.filter(Q(status='announced') | Q(status='booking')).order_by('-id')
+    data['upcoming_tours'] = Tour.objects.filter(Q(status='announced') | Q(status='booking')).filter(start_date__gte=date.today()).order_by('-id')
     data['popular_destinations'] = Place.objects.all().order_by('-id')[:5]
     return render(request, 'landing/index.html', data)
 
@@ -28,17 +31,21 @@ def loginView(request):
         
     data = {}
     if request.method == 'POST':
-        print(request.POST)
-        data['password'] = request.POST.get('password')
-        data['username'] = User.objects.get(email=request.POST.get('email')).username
-        user = authenticate(username=data['username'], password=data['password'])
-        if user is not None:
-            login(request, user)
-            return redirect('index')
-        else:
-            return render(request, 'auth/login.html', {'error': 'Invalid username or password'})
+        try:
+            data['password'] = request.POST.get('password')
+            data['username'] = User.objects.get(email=request.POST.get('email')).username
+            user = authenticate(username=data['username'], password=data['password'])
+            if user is not None:
+                login(request, user)
+                if request.GET.get('next'):
+                    return redirect(request.GET.get('next'))
+                return redirect('index')
+            else:
+                data['error'] = 'Invalid Credentials'
+        except:
+            data['error'] = 'Invalid Credentials'
 
-    return render(request, 'auth/login.html')
+    return render(request, 'auth/login.html', data)
 
 
 def logoutView(request):
@@ -47,23 +54,29 @@ def logoutView(request):
 
 
 def registerView(request):
+    data = {}
     if request.user.is_authenticated:
         return redirect('index')
     if request.method == 'POST':
-        user_form = UserRegistrationForm(request.POST)
-        profile_form = ProfileForm(request.POST, request.FILES)
-        if user_form.is_valid() and profile_form.is_valid():
-            user = user_form.save()
-            profile = profile_form.save(commit=False)
-            profile.user = user
-            profile.save()
-            user = authenticate(username=user_form.cleaned_data['username'], password=user_form.cleaned_data['password'])
-            login(request, user)
-            return redirect('index')
-    else:
-        user_form = UserRegistrationForm()
-        profile_form = ProfileForm()
-    return render(request, 'auth/register.html', {'user_form': user_form, 'profile_form': profile_form})
+        try:
+            user_form = UserRegistrationForm(request.POST)
+            profile_form = ProfileForm(request.POST, request.FILES)
+            email = request.POST.get('email')
+            if User.objects.filter(email=email).exists():
+                raise Exception('Email already exists')
+            if user_form.is_valid() and profile_form.is_valid():
+                user = user_form.save()
+                profile = profile_form.save(commit=False)
+                profile.user = user
+                profile.save()
+                #user = authenticate(username=user_form.cleaned_data['username'], password=user_form.cleaned_data['password'])
+                login(request, user)
+                return redirect('index')
+        except Exception as e:
+            messages.error(request, str(e))
+    data['user_form'] = UserRegistrationForm()
+    data['profile_form'] = ProfileForm()
+    return render(request, 'auth/register.html', data)
 
 
 def searchView(request):
@@ -110,7 +123,6 @@ def guidesListView(request):
 def guideDetailView(request, pk):
     guide = Guide.objects.get(pk=pk)
     tour = guide.tours.first()
-    print(tour.destination.featured_image())
     return render(request, 'landing/guides/detail.html', {'guide': guide})
 
 
@@ -140,14 +152,14 @@ def tourDetailView(request, pk):
 
 
 def bookATourView(request, pk):
+    if not request.user.is_authenticated:
+        return redirect('login')
     data = {}
     tour = Tour.objects.get(pk=pk)
     user = request.user.profile
     data['tour'] = tour
     if request.method == 'POST':
-        print(request.POST)
         booking_form = BookingForm(request.POST)
-        print(booking_form)
         payment_form = PaymentForm(request.POST)
         if booking_form.is_valid():
             booking = booking_form.save(commit=False)
@@ -157,13 +169,13 @@ def bookATourView(request, pk):
             payment = payment_form.save(commit=False)
             payment.booking = booking
             payment.save()
-            return redirect('index')
+            messages.success(request, 'Booking Successful')
+            return redirect('booking_detail', pk=booking.pk)
         else:
             data['errors'] = True
             data['booking_form_errors'] = booking_form.errors
             data['payment_form_errors'] = payment_form.errors
-
-
+            messages.error(request, 'Booking Failed')
         
     return render(request, 'landing/tours/book.html', data)
 
@@ -184,7 +196,6 @@ def profileView(request):
             else:
                 data['user_errors'] = user_form.errors
         elif action == 'updateProfile':
-            print(request.FILES)
             profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
             if profile_form.is_valid():
                 profile_form.save()
@@ -213,7 +224,11 @@ def profileSettingsView(request):
 
 def bookingListView(request):
     data = {'title': "Your Bookings"}
-    data['bookings'] = Booking.objects.filter(user=request.user.profile).exclude(Q(tour__status='completed') | Q(tour__status='cancelled')).exclude(status='cancelled')
+    bookings = Booking.objects.filter(user=request.user.profile).exclude(Q(tour__status='completed') | Q(tour__status='cancelled')).exclude(status='cancelled')
+    data['bookings'] = bookings
+    if len(bookings) >0:
+        last_tour = bookings.last().tour.end_date
+        data['suggestion'] = Tour.objects.filter(start_date__gte=last_tour).exclude(bookings__in=bookings).order_by('start_date').first()
     data['old_bookings'] = Booking.objects.filter(user=request.user.profile, tour__status='completed')
     data['cancelled_bookings'] = Booking.objects.filter(user=request.user.profile, status='cancelled')
     return render(request, 'profile/booking.html', data)
@@ -229,7 +244,46 @@ def bookingDetailView(request, pk):
             payment = form.save(commit=False)
             payment.booking = data['booking']
             payment.save()
-            return redirect('booking_detail')
+            messages.success(request, 'Booking Successful')
+            return redirect('booking_detail', pk=data['booking'].id)
         else:
-            data['errors'] = form.errors
+            messages.error(request, 'Something went wrong')
     return render(request, 'profile/booking_detail.html', data)
+
+
+def shop_list(request):
+    data = {
+        'products': Product.objects.all()
+    }
+    return render(request, 'landing/shop/list.html', data)
+
+
+def shop_detail(request, pk):
+    data = {
+        'product': Product.objects.get(pk=pk),
+    }
+    if request.method == 'POST':
+        print(request.POST)
+        try:
+            booking = Booking.objects.get(pk=request.POST.get('selectBooking'))
+            rent = Rent.objects.create(product=data['product'], booking=booking, quantity=int(request.POST.get('quantity')), days=booking.tour.days)
+            messages.success(request, 'Product Rented Successfully')
+            return redirect('shop_detail', pk=data['product'].id)
+        except Exception as e:
+            print(e)
+            messages.error(request, 'Something went wrong')
+    return render(request, 'landing/shop/detail.html', data)
+
+
+
+def booking_details_api(request, pk):
+    try:
+        booking = Booking.objects.get(pk=pk)
+        data = {
+            'days': booking.tour.days,
+            'dates': f'{booking.tour.start_date} to {booking.tour.end_date}',
+            'status': 200
+        }
+        return JsonResponse(data)
+    except:
+        return JsonResponse({'error': 'Something Bad happened', 'status':500})

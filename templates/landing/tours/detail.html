@@ -25,6 +25,15 @@
                     <span class="font-bold text-xl">৳{{tour.price}}</span> / Per
                     Person
                 </h4>
+                {% if tour.is_expired or tour.available_seats < 1 %}
+                <button disabled class="font-bold text-white rounded-md mt-6">
+                    <a
+                        class="px-6 py-3 bg-gray-700 text-white rounded-md"
+                        href="#"
+                        >Booking Closed</a
+                    >
+                </button>
+                {% else %}
                 <button class="font-bold text-white rounded-md mt-6">
                     <a
                         class="px-6 py-3 bg-orange-500 hover:bg-secondary text-white rounded-md"
@@ -32,6 +41,7 @@
                         >Book Now</a
                     >
                 </button>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -78,7 +88,7 @@
                 <div class="p-6 text-md text-gray-700 font-bold">Guide:</div>
                 <div class="col-span-2">
                     <a
-                        href="#"
+                        href="{% url 'guide_detail' tour.guide.id %}"
                         target="_blank"
                         class="h-full p-2 flex items-center"
                     >
@@ -142,6 +152,10 @@
             <div
                 class="max-w-7xl mx-2 lg:mx-auto rounded-xl border border-dashed border-2 border-gray-300 py-12 px-4 text-center"
             >
+                {% if tour.is_expired or tour.available_seats < 1 %}
+                <h1 class="text-xl font-bold text-gray-700">Booking Closed</h1>
+
+                {% else %}
                 <h1 class="text-xl font-bold text-gray-700">
                     {{tour.available_seats}} Seats Available
                 </h1>
@@ -152,6 +166,7 @@
                         >Book Your Seat Now</a
                     >
                 </button>
+                {% endif %}
             </div>
         </div>
         <div class="col-span-3">
